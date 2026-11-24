@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>STAI Imam Syafi'i Cianjur — Portal Resmi &amp; Layanan Digital</title>
+  <style>
+    :root {
+      --primary: #14724e;
+      --primary-deep: #0b4630;
+      --primary-mid: #105c3f;
+      --primary-light: #e8f5ef;
+      --gold: #d4af37;
+      --gold-light: #f7df8b;
+      --gold-soft: #fef9e7;
+      --bg: #f3f6f4;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #dce5df;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    html, body {
+      max-width: 100%;
+      overflow-x: hidden;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+      scroll-behavior: smooth;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: var(--primary-deep);
+      color: #ffffff;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.28);
+      position: sticky;
+      top: 0;
+      z-index: 40;
+    }
+
+    .nav-inner {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: #ffffff;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--gold) 0%, #b89022 100%);
+      color: var(--primary-deep);
+      font-weight: 800;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      letter-spacing: 0.5px;
+    }
+
+    .brand-text {
+      min-width: 0;
+    }
+
+    .brand-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .brand-sub {
+      font-size: 0.72rem;
+      color: var(--gold-light);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .nav-link {
+      color: rgba(255, 255, 255, 0.88);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 6px 10px;
+      border-radius: 7px;
+      transition: background 0.2s;
+    }
+
+    .nav-link:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+    }
+
+    .nav-cta {
+      background: var(--gold);
+      color: var(--primary-deep);
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 7px 13px;
+      border-radius: 8px;
+      transition: opacity 0.2s;
+    }
+
+    .nav-cta:hover {
+      opacity: 0.92;
+    }
+
+    /* Hero Banner */
+    .hero {
+      background: radial-gradient(circle at top right, #19875d 0%, var(--primary) 45%, var(--primary-deep) 100%);
+      color: #ffffff;
+      padding: 44px 16px 48px;
+      border-bottom: 4px solid var(--gold);
+      text-align: center;
+    }
+
+    .hero-inner {
+      max-width: 780px;
+      margin: 0 auto;
+    }
+
+    .hero-pill {
+      display: inline-block;
+      background: rgba(212, 175, 55, 0.18);
+      border: 1px solid rgba(212, 175, 55, 0.55);
+      color: var(--gold-light);
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      padding: 4px 14px;
+      border-radius: 999px;
+      margin-bottom: 14px;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      font-size: 1.85rem;
+      font-weight: 800;
+      line-height: 1.25;
+      margin-bottom: 12px;
+    }
+
+    .hero p {
+      font-size: 0.98rem;
+      color: rgba(255, 255, 255, 0.92);
+      max-width: 640px;
+      margin: 0 auto 24px;
+    }
+
+    .hero-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-gold {
+      background: var(--gold);
+      color: var(--primary-deep);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 11px 20px;
+      border-radius: 9px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transition: transform 0.15s, opacity 0.2s;
+    }
+
+    .btn-gold:hover {
+      opacity: 0.94;
+      transform: translateY(-1px);
+    }
+
+    .btn-outline-light {
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 11px 20px;
+      border-radius: 9px;
+      transition: background 0.2s;
+    }
+
+    .btn-outline-light:hover {
+      background: rgba(255, 255, 255, 0.22);
+    }
+
+    /* Main Container */
+    .container {
+      width: 100%;
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 24px 16px;
+    }
+
+    .section-header {
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .section-header h2 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--primary-deep);
+    }
+
+    .section-header span {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    /* Portal Layanan Grid */
+    .portal-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .portal-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      text-decoration: none;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+    }
+
+    .portal-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 6px 16px rgba(20, 114, 78, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .portal-card.featured {
+      border-left: 4px solid var(--primary);
+      background: linear-gradient(to right, #f7fcf9 0%, #ffffff 45%);
+    }
+
+    .portal-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .portal-tag {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: var(--primary-light);
+      color: var(--primary-deep);
+      text-transform: uppercase;
+    }
+
+    .portal-tag.gold {
+      background: var(--gold-soft);
+      color: #8a6908;
+      border: 1px solid #ead58b;
+    }
+
+    .portal-arrow {
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    .portal-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary-deep);
+      margin-bottom: 5px;
+    }
+
+    .portal-card p {
+      font-size: 0.83rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .portal-url {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Program Studi & Unit */
+    .prodi-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .info-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+    }
+
+    .info-card h3 {
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: var(--primary-deep);
+      margin-bottom: 6px;
+    }
+
+    .info-card p {
+      font-size: 0.84rem;
+      color: var(--muted);
+    }
+
+    .unit-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .unit-row {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 11px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .unit-name {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .unit-desc {
+      font-size: 0.78rem;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-align: right;
+    }
+
+    /* Footer */
+    footer {
+      background: var(--primary-deep);
+      color: rgba(255, 255, 255, 0.86);
+      padding: 24px 16px;
+      margin-top: 16px;
+      border-top: 3px solid var(--gold);
+      font-size: 0.82rem;
+    }
+
+    .footer-inner {
+      max-width: 980px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .footer-inner strong {
+      color: #ffffff;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    @media (max-width: 680px) {
+      .portal-grid, .prodi-grid {
+        grid-template-columns: 1fr;
+      }
+      .hero h1 {
+        font-size: 1.45rem;
+      }
+      .nav-link {
+        display: none;
+      }
+      .unit-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+      }
+      .unit-desc {
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigasi Atas -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="/" class="brand">
+        <div class="brand-mark">STAIIS</div>
+        <div class="brand-text">
+          <div class="brand-title">STAI Imam Syafi'i Cianjur</div>
+          <div class="brand-sub">Cianjur, Jawa Barat</div>
+        </div>
+      </a>
+      <div class="nav-links">
+        <a href="#layanan" class="nav-link">Layanan Digital</a>
+        <a href="#prodi" class="nav-link">Program Studi</a>
+        <a href="#unit" class="nav-link">Lembaga &amp; Unit</a>
+        <a href="lppm.html" class="nav-cta">Portal LPPM</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Beranda -->
+  <header class="hero">
+    <div class="hero-inner">
+      <span class="hero-pill">Portal Sistem Informasi Institusi</span>
+      <h1>Sekolah Tinggi Agama Islam Imam Syafi'i Cianjur</h1>
+      <p>Membangun generasi Ulama yang unggul, beradab, dan berlandaskan manhaj Ahlusunnah Wal Jama'ah.</p>
+      <div class="hero-buttons">
+        <a href="lppm.html" class="btn-gold">Sistem Penelitian &amp; PkM (LPPM) &rarr;</a>
+        <a href="https://akademikstaiis.vercel.app" target="_blank" rel="noopener" class="btn-outline-light">Portal Akademik &amp; Layanan</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Seksi Portal Digital -->
+    <section id="layanan">
+      <div class="section-header">
+        <h2>Layanan Digital &amp; Aplikasi Kampus</h2>
+        <span>Akses cepat layanan akademik, penelitian, dan administrasi</span>
+      </div>
+
+      <div class="portal-grid">
+        <a href="lppm.html" class="portal-card featured">
+          <div>
+            <div class="portal-top">
+              <span class="portal-tag gold">Aktif &bull; LPPM</span>
+              <span class="portal-arrow">&rarr;</span>
+            </div>
+            <h3>Pengelolaan Penelitian &amp; PkM (LPPM)</h3>
+            <p>Pengajuan proposal penelitian dan pengabdian masyarakat, desk evaluation, review, kontrak, monev, hingga laporan akhir.</p>
+          </div>
+          <div class="portal-url">staiis.vercel.app/lppm.html</div>
+        </a>
+
+        <a href="https://akademikstaiis.vercel.app" target="_blank" rel="noopener" class="portal-card">
+          <div>
+            <div class="portal-top">
+              <span class="portal-tag">Akademik</span>
+              <span class="portal-arrow">&rarr;</span>
+            </div>
+            <h3>Portal Akademik &amp; KRS Online</h3>
+            <p>Pengisian Kartu Rencana Studi (KRS), Kartu Hasil Studi (KHS), KTM, informasi ujian, dan input nilai dosen.</p>
+          </div>
+          <div class="portal-url">akademikstaiis.vercel.app</div>
+        </a>
+
+        <a href="https://akademikstaiis.vercel.app/pintasan.html" target="_blank" rel="noopener" class="portal-card">
+          <div>
+            <div class="portal-top">
+              <span class="portal-tag">Idarah</span>
+              <span class="portal-arrow">&rarr;</span>
+            </div>
+            <h3>Layanan Administrasi &amp; Persuratan</h3>
+            <p>Pengajuan Surat Keterangan Aktif, Surat Keterangan Lulus, Bebas Tanggungan, Mutasi, Rekomendasi, dan Sertifikat PPL-KKN.</p>
+          </div>
+          <div class="portal-url">akademikstaiis.vercel.app/pintasan.html</div>
+        </a>
+
+        <a href="https://akademikstaiis.vercel.app" target="_blank" rel="noopener" class="portal-card">
+          <div>
+            <div class="portal-top">
+              <span class="portal-tag">SPMB</span>
+              <span class="portal-arrow">&rarr;</span>
+            </div>
+            <h3>Penerimaan Mahasiswa Baru (SPMB)</h3>
+            <p>Informasi pendaftaran calon mahasiswa baru, brosur penerimaan, jadwal seleksi, dan pemilihan program studi.</p>
+          </div>
+          <div class="portal-url">Seleksi Penerimaan Mahasiswa-Mahasiswi Baru</div>
+        </a>
+      </div>
+    </section>
+
+    <!-- Seksi Program Studi -->
+    <section id="prodi">
+      <div class="section-header">
+        <h2>Program Studi Sarjana (S1)</h2>
+        <span>Terakreditasi BAN-PT</span>
+      </div>
+
+      <div class="prodi-grid">
+        <div class="info-card">
+          <h3>S1 Hukum Keluarga Islam (HKI)</h3>
+          <p>Ahwal Al-Syakhshiyyah &mdash; Mengkaji hukum Islam, peradilan agama, dan hukum keluarga secara komprehensif berbasis turats dan regulasi nasional.</p>
+        </div>
+        <div class="info-card">
+          <h3>S1 Pendidikan Bahasa Arab (PBA)</h3>
+          <p>Menyiapkan pendidik dan praktisi bahasa Arab yang fasih, kompeten dalam metodologi pengajaran modern, serta berwawasan keislaman.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Seksi Lembaga & Unit -->
+    <section id="unit">
+      <div class="section-header">
+        <h2>Lembaga &amp; Unit Pengelola</h2>
+        <span>Struktur pelaksana akademik dan mutu institusi</span>
+      </div>
+
+      <div class="unit-list">
+        <div class="unit-row">
+          <div class="unit-name">LPPM (Lembaga Penelitian dan Pengabdian kepada Masyarakat)</div>
+          <div class="unit-desc">Penelitian dosen, publikasi ilmiah, PkM, dan KKN</div>
+        </div>
+        <div class="unit-row">
+          <div class="unit-name">LPM (Lembaga Penjaminan Mutu)</div>
+          <div class="unit-desc">Audit Mutu Internal (AMI), evaluasi kepuasan, dan akreditasi BAN-PT</div>
+        </div>
+        <div class="unit-row">
+          <div class="unit-name">Idarah (Administrasi Akademik &amp; Arsip)</div>
+          <div class="unit-desc">Tata kelola data mahasiswa, persuratan, dan kearsipan institusi</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <strong>STAI Imam Syafi'i Cianjur</strong>
+        <span>Kabupaten Cianjur, Jawa Barat, Indonesia</span>
+      </div>
+      <div>
+        <span>&copy; 2026 STAI Imam Syafi'i Cianjur</span>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
