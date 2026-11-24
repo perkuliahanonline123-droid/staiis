@@ -439,6 +439,33 @@
       text-decoration: underline;
     }
 
+    .history-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 10px 12px;
+      margin-bottom: 14px;
+    }
+
+    .history-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--primary-deep);
+      margin-bottom: 6px;
+    }
+
+    .history-item {
+      font-size: 0.76rem;
+      color: var(--muted);
+      padding: 5px 0;
+      border-top: 1px dashed #cbd5e1;
+    }
+
+    .history-item:first-of-type {
+      border-top: none;
+      padding-top: 0;
+    }
+
     .admin-panel {
       background: #f8faf9;
       padding: 14px;
@@ -514,11 +541,11 @@
       </div>
     </section>
 
-    <!-- Ringkasan Statistik -->
+    <!-- Ringkasan Statistik (Usulan Aktif Terbaru) -->
     <section class="stats-grid">
       <div class="stat-box">
         <div class="stat-num" id="statTotal">0</div>
-        <div class="stat-label">Total Riwayat</div>
+        <div class="stat-label">Total Usulan</div>
       </div>
       <div class="stat-box">
         <div class="stat-num" id="statPenelitian">0</div>
@@ -585,10 +612,10 @@
       </form>
     </section>
 
-    <!-- Rekap & Monitoring Data -->
+    <!-- Rekap & Monitoring Data (Hanya Tahap Terbaru) -->
     <section class="card">
       <div class="card-title">
-        <span>Daftar Riwayat &amp; Rekap LPPM</span>
+        <span>Daftar Rekap Penelitian &amp; PkM</span>
         <span style="font-size:0.76rem; font-weight:500; color:var(--muted);">Klik baris untuk detail &amp; tindak lanjut LPPM</span>
       </div>
 
@@ -630,11 +657,12 @@
         <button type="button" class="btn-close" onclick="closeModal()">&times;</button>
       </div>
       <div id="modalContent" class="detail-table"></div>
+      <div id="modalHistoryBox"></div>
 
       <div class="admin-panel">
         <span class="admin-badge">KHUSUS ADMIN LPPM</span>
         <p class="admin-hint">
-          Pembaruan tahapan akan membuat <strong>riwayat data baru</strong> tanpa mengubah data awal (Pengajuan Proposal).
+          Pembaruan tahapan akan membuat <strong>riwayat data baru</strong> di Spreadsheet tanpa menghapus data awal.
         </p>
 
         <div class="field-space">
@@ -686,7 +714,22 @@
     const CACHE_KEY = 'staiis_lppm_cache_v2';
     const CACHE_TTL_MS = 365 * 24 * 60 * 60 * 1000; // 1 tahun
 
+    const STAGE_FLOW = [
+      'Pengajuan Proposal',
+      'Desk Evaluation',
+      'Review Proposal',
+      'Penetapan Penerimaan',
+      'Tanda Tangan Kontrak (70%)',
+      'Pelaksanaan Kegiatan',
+      'Monev LPPM',
+      'Laporan Akhir',
+      'Review Laporan Akhir',
+      'Berita Acara Laporan (30%)'
+    ];
+
     let allRecords = [];
+    let latestRecords = [];
+    let historyByKey = {};
     let selectedRecordId = null;
 
     function toggleFlow() {
@@ -701,6 +744,30 @@
         .replace(/"/g, '&quot;');
     }
 
+    function getProposalKey(item) {
+      return [
+        (item.Jenis || '').trim().toLowerCase(),
+        (item.Ketua || '').trim().toLowerCase(),
+        (item.Judul || '').trim().toLowerCase()
+      ].join('||');
+    }
+
+    // Mengelompokkan data berdasarkan usulan sehingga hanya tahap terbaru yang tampil di daftar utama
+    function processRecords(records) {
+      allRecords = records || [];
+      latestRecords = [];
+      historyByKey = {};
+
+      allRecords.forEach(item => {
+        const key = getProposalKey(item);
+        if (!historyByKey[key]) {
+          historyByKey[key] = [];
+          latestRecords.push(item); // Baris paling atas adalah tahap terbaru
+        }
+        historyByKey[key].push(item);
+      });
+    }
+
     async function loadData(forceRefresh = false) {
       const btnRefresh = document.getElementById('btnRefresh');
       const cacheInfo = document.getElementById('cacheInfo');
@@ -713,7 +780,7 @@
           const parsed = JSON.parse(raw);
           if (parsed && parsed.savedAt && (Date.now() - parsed.savedAt < CACHE_TTL_MS)) {
             cachedObj = parsed;
-            allRecords = parsed.data || [];
+            processRecords(parsed.data || []);
             updateStats();
             applyFilter();
             cacheInfo.textContent = 'Versi cache: ' + (parsed.version || 'v2');
@@ -738,7 +805,7 @@
               savedAt: Date.now(),
               data: json.data || []
             }));
-            allRecords = json.data || [];
+            processRecords(json.data || []);
             updateStats();
             applyFilter();
           }
@@ -755,9 +822,9 @@
     }
 
     function updateStats() {
-      const total = allRecords.length;
-      const penelitian = allRecords.filter(r => r.Jenis === 'Penelitian').length;
-      const pkm = allRecords.filter(r => r.Jenis === 'PkM').length;
+      const total = latestRecords.length;
+      const penelitian = latestRecords.filter(r => r.Jenis === 'Penelitian').length;
+      const pkm = latestRecords.filter(r => r.Jenis === 'PkM').length;
 
       document.getElementById('statTotal').textContent = total;
       document.getElementById('statPenelitian').textContent = penelitian;
@@ -769,7 +836,7 @@
       const fJenis = document.getElementById('filterJenis').value;
       const fTahap = document.getElementById('filterTahapan').value;
 
-      const filtered = allRecords.filter(item => {
+      const filtered = latestRecords.filter(item => {
         const matchJenis = !fJenis || item.Jenis === fJenis;
         const matchTahap = !fTahap || item.Tahapan === fTahap;
         const matchQuery = !q ||
@@ -879,17 +946,21 @@
     }
 
     function openDetail(id) {
-      const item = allRecords.find(r => r.ID === id);
+      const item = latestRecords.find(r => r.ID === id) || allRecords.find(r => r.ID === id);
       if (!item) return;
 
-      selectedRecordId = id;
+      selectedRecordId = item.ID;
       document.getElementById('modalStatusMsg').textContent = '';
       document.getElementById('lppmPasswordInput').value = '';
 
-      // Otomatis sarankan tahap berikutnya jika saat ini masih Pengajuan Proposal
+      // Otomatis sarankan tahap berikutnya sesuai urutan alur LPPM
       const tahapSelect = document.getElementById('updateTahapanSelect');
-      if (item.Tahapan === 'Pengajuan Proposal') {
-        tahapSelect.value = 'Desk Evaluation';
+      const currentIdx = STAGE_FLOW.indexOf(item.Tahapan);
+      if (currentIdx >= 0 && currentIdx < STAGE_FLOW.length - 1) {
+        const nextStage = STAGE_FLOW[currentIdx + 1];
+        if (tahapSelect.querySelector(`option[value="${nextStage}"]`)) {
+          tahapSelect.value = nextStage;
+        }
       } else if (tahapSelect.querySelector(`option[value="${item.Tahapan}"]`)) {
         tahapSelect.value = item.Tahapan;
       } else {
@@ -904,15 +975,36 @@
         : '<strong>-</strong>';
 
       document.getElementById('modalContent').innerHTML = `
-        <div class="detail-row"><span>ID &amp; Waktu Tercatat</span><strong>${escapeHtml(item.ID)} &bull; ${escapeHtml(item.Waktu)}</strong></div>
+        <div class="detail-row"><span>ID &amp; Waktu Tahap Terbaru</span><strong>${escapeHtml(item.ID)} &bull; ${escapeHtml(item.Waktu)}</strong></div>
         <div class="detail-row"><span>Jenis &amp; Program Studi</span><strong>${escapeHtml(item.Jenis)} &mdash; ${escapeHtml(item.Prodi)}</strong></div>
         <div class="detail-row"><span>Ketua Pelaksana</span><strong>${escapeHtml(item.Ketua)}</strong></div>
         <div class="detail-row"><span>Judul Kegiatan</span><strong>${escapeHtml(item.Judul)}</strong></div>
-        <div class="detail-row"><span>Tahapan Data Ini</span><strong>${escapeHtml(item.Tahapan)}</strong></div>
+        <div class="detail-row"><span>Tahapan Saat Ini</span><strong>${escapeHtml(item.Tahapan)}</strong></div>
         <div class="detail-row"><span>Anggaran / Nilai Dana</span><strong>${escapeHtml(item.Dana || '-')}</strong></div>
         <div class="detail-row"><span>Tautan Berkas</span>${linkHtml}</div>
-        <div class="detail-row"><span>Keterangan Saat Ini</span><strong>${escapeHtml(item.Keterangan || '-')}</strong></div>
+        <div class="detail-row"><span>Keterangan Tahap Ini</span><strong>${escapeHtml(item.Keterangan || '-')}</strong></div>
       `;
+
+      // Tampilkan riwayat tahap sebelumnya jika sudah pernah berpindah tahap
+      const key = getProposalKey(item);
+      const historyList = (historyByKey[key] || []).filter(h => h.ID !== item.ID);
+      const historyContainer = document.getElementById('modalHistoryBox');
+
+      if (historyList.length > 0) {
+        historyContainer.innerHTML = `
+          <div class="history-box">
+            <div class="history-title">Riwayat Tahapan Sebelumnya (${historyList.length})</div>
+            ${historyList.map(h => `
+              <div class="history-item">
+                <strong>${escapeHtml(h.Tahapan)}</strong> (${escapeHtml(h.Waktu)})<br/>
+                ${escapeHtml(h.Keterangan || '-')}
+              </div>
+            `).join('')}
+          </div>
+        `;
+      } else {
+        historyContainer.innerHTML = '';
+      }
 
       document.getElementById('detailModal').classList.add('open');
     }
