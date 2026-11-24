@@ -18,6 +18,8 @@
       --border: #dce5df;
       --danger: #b91c1c;
       --danger-bg: #fef2f2;
+      --warn: #b45309;
+      --warn-bg: #fffbeb;
     }
 
     * {
@@ -230,6 +232,13 @@
       box-shadow: 0 0 0 3px rgba(20, 114, 78, 0.12);
     }
 
+    input[readonly] {
+      background: #f1f5f9;
+      color: var(--primary-deep);
+      font-weight: 600;
+      cursor: not-allowed;
+    }
+
     .btn-primary {
       width: 100%;
       background: var(--primary);
@@ -267,7 +276,7 @@
       margin-bottom: 14px;
     }
 
-    /* Full-width Single-line Preview Rows (Tanpa Scroll Horizontal) */
+    /* Full-width Single-line Preview Rows */
     .list-wrapper {
       display: flex;
       flex-direction: column;
@@ -318,6 +327,15 @@
       text-overflow: ellipsis;
     }
 
+    .row-note {
+      margin-top: 4px;
+      font-size: 0.77rem;
+      color: var(--primary-deep);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     .badge {
       flex-shrink: 0;
       font-size: 0.72rem;
@@ -334,9 +352,16 @@
       border: 1px solid #ead58b;
     }
 
+    .badge-warn {
+      background: var(--warn-bg);
+      color: var(--warn);
+      border: 1px solid #fde68a;
+    }
+
     .badge-danger {
       background: var(--danger-bg);
       color: var(--danger);
+      border: 1px solid #fecaca;
     }
 
     /* Modal Detail & Update Tahapan */
@@ -344,9 +369,9 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.55);
+      background: rgba(15, 23, 42, 0.58);
       z-index: 50;
-      padding: 16px;
+      padding: 14px;
       align-items: center;
       justify-content: center;
     }
@@ -358,10 +383,10 @@
     .modal-box {
       background: #ffffff;
       width: 100%;
-      max-width: 520px;
+      max-width: 540px;
       border-radius: 14px;
       padding: 20px;
-      max-height: 90vh;
+      max-height: 92vh;
       overflow-y: auto;
       border-top: 4px solid var(--primary);
     }
@@ -391,13 +416,13 @@
     }
 
     .detail-row {
-      padding: 7px 0;
+      padding: 6px 0;
       border-bottom: 1px solid #f1f5f9;
     }
 
     .detail-row span {
       display: block;
-      font-size: 0.75rem;
+      font-size: 0.74rem;
       color: var(--muted);
     }
 
@@ -408,10 +433,38 @@
 
     .link-btn {
       display: inline-block;
-      margin-top: 4px;
+      margin-top: 3px;
       color: var(--primary);
       font-weight: 700;
       text-decoration: underline;
+    }
+
+    .admin-panel {
+      background: #f8faf9;
+      padding: 14px;
+      border-radius: 10px;
+      border: 1px solid #cfe0d6;
+    }
+
+    .admin-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      background: var(--primary-deep);
+      color: #ffffff;
+      padding: 2px 8px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+
+    .admin-hint {
+      font-size: 0.76rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .field-space {
+      margin-bottom: 10px;
     }
 
     @media (max-width: 640px) {
@@ -431,7 +484,7 @@
       <div class="hero-top">
         <div>
           <span class="hero-badge">LPPM STAI Imam Syafi'i Cianjur</span>
-          <h1>Sistem Pengelolaan Penelitian & PkM</h1>
+          <h1>Sistem Pengelolaan Penelitian &amp; PkM</h1>
           <p>Lembaga Penelitian dan Pengabdian kepada Masyarakat &bull; HKI &amp; PBA</p>
         </div>
         <div class="hero-actions">
@@ -465,7 +518,7 @@
     <section class="stats-grid">
       <div class="stat-box">
         <div class="stat-num" id="statTotal">0</div>
-        <div class="stat-label">Total Usulan</div>
+        <div class="stat-label">Total Riwayat</div>
       </div>
       <div class="stat-box">
         <div class="stat-num" id="statPenelitian">0</div>
@@ -506,18 +559,7 @@
           </div>
           <div>
             <label for="tahapan">Tahapan Awal</label>
-            <select id="tahapan" required>
-              <option value="Pengajuan Proposal">1. Pengajuan Proposal</option>
-              <option value="Desk Evaluation">2. Desk Evaluation</option>
-              <option value="Review Proposal">3. Review Proposal</option>
-              <option value="Penetapan Penerimaan">4. Penetapan Penerimaan</option>
-              <option value="Tanda Tangan Kontrak (70%)">5. Tanda Tangan Kontrak (70%)</option>
-              <option value="Pelaksanaan Kegiatan">6. Pelaksanaan Kegiatan</option>
-              <option value="Monev LPPM">7. Monev LPPM</option>
-              <option value="Laporan Akhir">8. Laporan Akhir</option>
-              <option value="Review Laporan Akhir">9. Review Laporan Akhir</option>
-              <option value="Berita Acara Laporan (30%)">10. Berita Acara Laporan (30%)</option>
-            </select>
+            <input type="text" id="tahapan" value="Pengajuan Proposal" readonly />
           </div>
           <div class="form-full">
             <label for="judul">Judul Penelitian / Kegiatan PkM</label>
@@ -546,12 +588,12 @@
     <!-- Rekap & Monitoring Data -->
     <section class="card">
       <div class="card-title">
-        <span>Daftar Rekap Penelitian &amp; PkM</span>
-        <span style="font-size:0.76rem; font-weight:500; color:var(--muted);">Klik baris untuk detail &amp; ubah tahap</span>
+        <span>Daftar Riwayat &amp; Rekap LPPM</span>
+        <span style="font-size:0.76rem; font-weight:500; color:var(--muted);">Klik baris untuk detail &amp; tindak lanjut LPPM</span>
       </div>
 
       <div class="filter-bar">
-        <input type="text" id="searchInput" placeholder="Cari judul, ketua, atau ID..." oninput="applyFilter()" />
+        <input type="text" id="searchInput" placeholder="Cari judul, ketua, keterangan..." oninput="applyFilter()" />
         <select id="filterJenis" onchange="applyFilter()">
           <option value="">Semua Jenis</option>
           <option value="Penelitian">Penelitian</option>
@@ -580,32 +622,60 @@
     </section>
   </div>
 
-  <!-- Modal Detail & Pembaruan Tahapan -->
+  <!-- Modal Detail & Pembaruan Tahapan (Khusus Admin LPPM) -->
   <div id="detailModal" class="modal-backdrop" onclick="closeModalOnBackdrop(event)">
     <div class="modal-box">
       <div class="modal-header">
-        <strong style="color:var(--primary-deep); font-size:1rem;">Detail Usulan LPPM</strong>
+        <strong style="color:var(--primary-deep); font-size:1rem;">Detail Usulan &amp; Tindak Lanjut LPPM</strong>
         <button type="button" class="btn-close" onclick="closeModal()">&times;</button>
       </div>
       <div id="modalContent" class="detail-table"></div>
 
-      <div style="background:var(--bg); padding:12px; border-radius:10px; border:1px solid var(--border);">
-        <label for="updateTahapanSelect">Perbarui Tahapan Proses LPPM</label>
-        <select id="updateTahapanSelect" style="margin-bottom:10px;">
-          <option value="Pengajuan Proposal">1. Pengajuan Proposal</option>
-          <option value="Desk Evaluation">2. Desk Evaluation</option>
-          <option value="Review Proposal">3. Review Proposal</option>
-          <option value="Penetapan Penerimaan">4. Penetapan Penerimaan</option>
-          <option value="Tanda Tangan Kontrak (70%)">5. Tanda Tangan Kontrak (70%)</option>
-          <option value="Pelaksanaan Kegiatan">6. Pelaksanaan Kegiatan (3–4 Bulan)</option>
-          <option value="Monev LPPM">7. Monev LPPM</option>
-          <option value="Laporan Akhir">8. Laporan Akhir</option>
-          <option value="Review Laporan Akhir">9. Review Laporan Akhir</option>
-          <option value="Berita Acara Laporan (30%)">10. Berita Acara Laporan (30%)</option>
-          <option value="Proposal Ditolak">Proposal Ditolak</option>
-          <option value="Laporan Akhir Ditolak">Laporan Akhir Ditolak</option>
-        </select>
-        <button type="button" class="btn-primary" id="btnUpdateStage" onclick="submitStageUpdate()">Simpan Perubahan Tahapan</button>
+      <div class="admin-panel">
+        <span class="admin-badge">KHUSUS ADMIN LPPM</span>
+        <p class="admin-hint">
+          Pembaruan tahapan akan membuat <strong>riwayat data baru</strong> tanpa mengubah data awal (Pengajuan Proposal).
+        </p>
+
+        <div class="field-space">
+          <label for="updateTahapanSelect">Tahapan Proses LPPM Baru</label>
+          <select id="updateTahapanSelect">
+            <option value="Desk Evaluation">2. Desk Evaluation</option>
+            <option value="Review Proposal">3. Review Proposal</option>
+            <option value="Penetapan Penerimaan">4. Penetapan Penerimaan</option>
+            <option value="Tanda Tangan Kontrak (70%)">5. Tanda Tangan Kontrak (70%)</option>
+            <option value="Pelaksanaan Kegiatan">6. Pelaksanaan Kegiatan (3–4 Bulan)</option>
+            <option value="Monev LPPM">7. Monev LPPM</option>
+            <option value="Laporan Akhir">8. Laporan Akhir</option>
+            <option value="Review Laporan Akhir">9. Review Laporan Akhir</option>
+            <option value="Berita Acara Laporan (30%)">10. Berita Acara Laporan (30%)</option>
+            <option value="Proposal Ditolak">Proposal Ditolak</option>
+            <option value="Laporan Akhir Ditolak">Laporan Akhir Ditolak</option>
+          </select>
+        </div>
+
+        <div class="field-space">
+          <label for="updateStatusKeputusan">Status Evaluasi / Keputusan</label>
+          <select id="updateStatusKeputusan" onchange="applyStatusPrefix()">
+            <option value="Diterima">Diterima (Lanjut Tahap Berikutnya)</option>
+            <option value="Revisi Minor">Revisi Minor</option>
+            <option value="Revisi Mayor">Revisi Mayor</option>
+            <option value="Ditolak">Ditolak</option>
+            <option value="Dalam Proses">Dalam Proses / Monitoring</option>
+          </select>
+        </div>
+
+        <div class="field-space">
+          <label for="updateKeteranganInput">Keterangan Pembaruan / Catatan LPPM</label>
+          <textarea id="updateKeteranganInput" rows="3" required placeholder="Tuliskan hasil evaluasi, catatan revisi, atau keterangan tindak lanjut..."></textarea>
+        </div>
+
+        <div class="field-space">
+          <label for="lppmPasswordInput">Sandi LPPM (Wajib untuk Menyimpan)</label>
+          <input type="password" id="lppmPasswordInput" placeholder="Masukkan sandi LPPM..." autocomplete="off" />
+        </div>
+
+        <button type="button" class="btn-primary" id="btnUpdateStage" onclick="submitStageUpdate()">Simpan Data Tahapan Baru</button>
         <div id="modalStatusMsg" class="status-msg"></div>
       </div>
     </div>
@@ -613,7 +683,7 @@
 
   <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbz730B9Zc3j1GnPyacj2uYrsbZI4Bjz6vtn3uhDQavSdcgooCk9p8Fq86u_mruoEfct/exec';
-    const CACHE_KEY = 'staiis_lppm_cache_v1';
+    const CACHE_KEY = 'staiis_lppm_cache_v2';
     const CACHE_TTL_MS = 365 * 24 * 60 * 60 * 1000; // 1 tahun
 
     let allRecords = [];
@@ -646,7 +716,7 @@
             allRecords = parsed.data || [];
             updateStats();
             applyFilter();
-            cacheInfo.textContent = 'Versi cache: ' + (parsed.version || 'v1');
+            cacheInfo.textContent = 'Versi cache: ' + (parsed.version || 'v2');
           }
         }
       } catch (e) {
@@ -659,7 +729,7 @@
         const json = await res.json();
 
         if (json.status === 'success') {
-          const serverVersion = json.version || 'v1';
+          const serverVersion = json.version || 'v2';
           const isVersionChanged = !cachedObj || cachedObj.version !== serverVersion;
 
           if (forceRefresh || isVersionChanged || JSON.stringify(cachedObj.data) !== JSON.stringify(json.data)) {
@@ -706,7 +776,8 @@
           (item.Judul || '').toLowerCase().includes(q) ||
           (item.Ketua || '').toLowerCase().includes(q) ||
           (item.ID || '').toLowerCase().includes(q) ||
-          (item.Prodi || '').toLowerCase().includes(q);
+          (item.Prodi || '').toLowerCase().includes(q) ||
+          (item.Keterangan || '').toLowerCase().includes(q);
         return matchJenis && matchTahap && matchQuery;
       });
 
@@ -721,8 +792,15 @@
       }
 
       container.innerHTML = items.map(item => {
-        const isDitolak = (item.Tahapan || '').toLowerCase().includes('ditolak');
-        const badgeClass = isDitolak ? 'badge badge-danger' : (item.Jenis === 'PkM' ? 'badge badge-pkm' : 'badge');
+        const tahapLower = (item.Tahapan || '').toLowerCase();
+        const ketLower = (item.Keterangan || '').toLowerCase();
+        const isDitolak = tahapLower.includes('ditolak') || ketLower.startsWith('[ditolak]');
+        const isRevisi = ketLower.includes('revisi');
+
+        let badgeClass = 'badge';
+        if (isDitolak) badgeClass = 'badge badge-danger';
+        else if (isRevisi) badgeClass = 'badge badge-warn';
+        else if (item.Jenis === 'PkM') badgeClass = 'badge badge-pkm';
 
         return `
           <div class="row-item" onclick="openDetail('${escapeHtml(item.ID)}')">
@@ -733,6 +811,7 @@
             <div class="row-sub">
               <strong>${escapeHtml(item.Jenis)}</strong> &bull; ${escapeHtml(item.Ketua)} (${escapeHtml(item.Prodi)}) &bull; ${escapeHtml(item.Waktu)}
             </div>
+            ${item.Keterangan ? `<div class="row-note">Keterangan: ${escapeHtml(item.Keterangan)}</div>` : ''}
           </div>
         `;
       }).join('');
@@ -752,7 +831,7 @@
         jenis: document.getElementById('jenis').value,
         prodi: document.getElementById('prodi').value,
         ketua: document.getElementById('ketua').value.trim(),
-        tahapan: document.getElementById('tahapan').value,
+        tahapan: 'Pengajuan Proposal',
         judul: document.getElementById('judul').value.trim(),
         dana: document.getElementById('dana').value.trim(),
         tautan: document.getElementById('tautan').value.trim(),
@@ -769,8 +848,9 @@
 
         if (result.status === 'success') {
           msg.style.color = '#14724e';
-          msg.textContent = 'Berhasil disimpan (' + result.id + ')';
+          msg.textContent = 'Pengajuan proposal berhasil disimpan (' + result.id + ')';
           document.getElementById('lppmForm').reset();
+          document.getElementById('tahapan').value = 'Pengajuan Proposal';
           await loadData(true);
         } else {
           throw new Error(result.message || 'Terjadi kesalahan');
@@ -784,27 +864,54 @@
       }
     });
 
+    function applyStatusPrefix() {
+      const status = document.getElementById('updateStatusKeputusan').value;
+      const tahap = document.getElementById('updateTahapanSelect').value;
+      const ketInput = document.getElementById('updateKeteranganInput');
+      const currentText = ketInput.value.replace(/^\[.*?\]\s*/, '').trim();
+
+      if (!currentText) {
+        ketInput.value = `[${status}] Hasil ${tahap}: `;
+      } else {
+        ketInput.value = `[${status}] ${currentText}`;
+      }
+      ketInput.focus();
+    }
+
     function openDetail(id) {
       const item = allRecords.find(r => r.ID === id);
       if (!item) return;
 
       selectedRecordId = id;
       document.getElementById('modalStatusMsg').textContent = '';
-      document.getElementById('updateTahapanSelect').value = item.Tahapan || 'Pengajuan Proposal';
+      document.getElementById('lppmPasswordInput').value = '';
+
+      // Otomatis sarankan tahap berikutnya jika saat ini masih Pengajuan Proposal
+      const tahapSelect = document.getElementById('updateTahapanSelect');
+      if (item.Tahapan === 'Pengajuan Proposal') {
+        tahapSelect.value = 'Desk Evaluation';
+      } else if (tahapSelect.querySelector(`option[value="${item.Tahapan}"]`)) {
+        tahapSelect.value = item.Tahapan;
+      } else {
+        tahapSelect.value = 'Desk Evaluation';
+      }
+
+      document.getElementById('updateStatusKeputusan').value = 'Diterima';
+      document.getElementById('updateKeteranganInput').value = `[Diterima] Hasil ${tahapSelect.value}: `;
 
       const linkHtml = item.Tautan
         ? `<a href="${escapeHtml(item.Tautan)}" target="_blank" rel="noopener" class="link-btn">Buka Berkas Google Drive &rarr;</a>`
         : '<strong>-</strong>';
 
       document.getElementById('modalContent').innerHTML = `
-        <div class="detail-row"><span>ID &amp; Waktu Input</span><strong>${escapeHtml(item.ID)} &bull; ${escapeHtml(item.Waktu)}</strong></div>
+        <div class="detail-row"><span>ID &amp; Waktu Tercatat</span><strong>${escapeHtml(item.ID)} &bull; ${escapeHtml(item.Waktu)}</strong></div>
         <div class="detail-row"><span>Jenis &amp; Program Studi</span><strong>${escapeHtml(item.Jenis)} &mdash; ${escapeHtml(item.Prodi)}</strong></div>
         <div class="detail-row"><span>Ketua Pelaksana</span><strong>${escapeHtml(item.Ketua)}</strong></div>
         <div class="detail-row"><span>Judul Kegiatan</span><strong>${escapeHtml(item.Judul)}</strong></div>
-        <div class="detail-row"><span>Tahapan Saat Ini</span><strong>${escapeHtml(item.Tahapan)}</strong></div>
+        <div class="detail-row"><span>Tahapan Data Ini</span><strong>${escapeHtml(item.Tahapan)}</strong></div>
         <div class="detail-row"><span>Anggaran / Nilai Dana</span><strong>${escapeHtml(item.Dana || '-')}</strong></div>
         <div class="detail-row"><span>Tautan Berkas</span>${linkHtml}</div>
-        <div class="detail-row"><span>Keterangan</span><strong>${escapeHtml(item.Keterangan || '-')}</strong></div>
+        <div class="detail-row"><span>Keterangan Saat Ini</span><strong>${escapeHtml(item.Keterangan || '-')}</strong></div>
       `;
 
       document.getElementById('detailModal').classList.add('open');
@@ -824,9 +931,31 @@
       const btn = document.getElementById('btnUpdateStage');
       const msg = document.getElementById('modalStatusMsg');
       const tahapanBaru = document.getElementById('updateTahapanSelect').value;
+      const keteranganBaru = document.getElementById('updateKeteranganInput').value.trim();
+      const sandi = document.getElementById('lppmPasswordInput').value.trim();
+
+      if (!keteranganBaru) {
+        msg.style.color = '#b91c1c';
+        msg.textContent = 'Harap isi keterangan pembaruan / hasil evaluasi LPPM.';
+        return;
+      }
+
+      if (!sandi) {
+        msg.style.color = '#b91c1c';
+        msg.textContent = 'Masukkan sandi LPPM terlebih dahulu untuk menyimpan perubahan.';
+        document.getElementById('lppmPasswordInput').focus();
+        return;
+      }
+
+      if (sandi !== 'lppm26') {
+        msg.style.color = '#b91c1c';
+        msg.textContent = 'Sandi LPPM salah! Hanya LPPM yang dapat memperbarui data.';
+        document.getElementById('lppmPasswordInput').focus();
+        return;
+      }
 
       btn.disabled = true;
-      btn.textContent = 'Memperbarui...';
+      btn.textContent = 'Menyimpan Riwayat Baru...';
       msg.textContent = '';
 
       try {
@@ -835,8 +964,10 @@
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify({
             action: 'updateStatus',
-            id: selectedRecordId,
-            tahapan: tahapanBaru
+            sourceId: selectedRecordId,
+            tahapan: tahapanBaru,
+            keterangan: keteranganBaru,
+            password: sandi
           })
         });
         const result = await res.json();
@@ -845,16 +976,16 @@
           msg.style.color = '#14724e';
           msg.textContent = result.message;
           await loadData(true);
-          setTimeout(() => closeModal(), 700);
+          setTimeout(() => closeModal(), 800);
         } else {
           throw new Error(result.message);
         }
       } catch (err) {
         msg.style.color = '#b91c1c';
-        msg.textContent = 'Gagal memperbarui: ' + err.message;
+        msg.textContent = err.message;
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Simpan Perubahan Tahapan';
+        btn.textContent = 'Simpan Data Tahapan Baru';
       }
     }
 
