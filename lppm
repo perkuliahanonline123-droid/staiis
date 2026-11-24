@@ -1,1 +1,864 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LPPM — STAI Imam Syafi'i Cianjur</title>
+  <style>
+    :root {
+      --primary: #14724e;
+      --primary-deep: #0b4630;
+      --primary-light: #e8f5ef;
+      --gold: #d4af37;
+      --gold-soft: #fef9e7;
+      --bg: #f3f6f4;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #dce5df;
+      --danger: #b91c1c;
+      --danger-bg: #fef2f2;
+    }
 
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    html, body {
+      max-width: 100%;
+      overflow-x: hidden;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 14px;
+    }
+
+    /* Header Nuansa STAI Imam Syafi'i Cianjur */
+    .hero {
+      background: linear-gradient(135deg, var(--primary-deep) 0%, var(--primary) 100%);
+      color: #ffffff;
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 16px;
+      border-bottom: 4px solid var(--gold);
+      box-shadow: 0 6px 18px rgba(11, 70, 48, 0.16);
+    }
+
+    .hero-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(212, 175, 55, 0.2);
+      border: 1px solid rgba(212, 175, 55, 0.55);
+      color: #f7df8b;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    .hero p {
+      font-size: 0.85rem;
+      opacity: 0.9;
+      margin-top: 4px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.14);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      padding: 8px 13px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    /* Statistik Ringkas */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .stat-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .stat-num {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--primary);
+      line-height: 1.2;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* Panel & Card */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary-deep);
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Alur Proses 10 Tahap */
+    .flow-panel {
+      display: none;
+      background: var(--gold-soft);
+      border: 1px solid #ead58b;
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 16px;
+    }
+
+    .flow-panel.active {
+      display: block;
+    }
+
+    .flow-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .flow-step {
+      background: #ffffff;
+      border: 1px solid #e6d79c;
+      border-left: 3px solid var(--primary);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 0.78rem;
+    }
+
+    .flow-step strong {
+      display: block;
+      color: var(--primary-deep);
+      margin-bottom: 2px;
+    }
+
+    /* Form Grid */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .form-full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: var(--text);
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      background: #ffffff;
+      color: var(--text);
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(20, 114, 78, 0.12);
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-deep);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    .status-msg {
+      margin-top: 10px;
+      font-size: 0.85rem;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    /* Full-width Single-line Preview Rows (Tanpa Scroll Horizontal) */
+    .list-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .row-item {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 10px 12px;
+      background: #ffffff;
+      cursor: pointer;
+      transition: border-color 0.18s, background 0.18s;
+    }
+
+    .row-item:hover {
+      border-color: var(--primary);
+      background: #fafdfb;
+    }
+
+    .row-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .row-title {
+      flex: 1;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .row-sub {
+      margin-top: 4px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .badge {
+      flex-shrink: 0;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: var(--primary-light);
+      color: var(--primary-deep);
+    }
+
+    .badge-pkm {
+      background: var(--gold-soft);
+      color: #8a6908;
+      border: 1px solid #ead58b;
+    }
+
+    .badge-danger {
+      background: var(--danger-bg);
+      color: var(--danger);
+    }
+
+    /* Modal Detail & Update Tahapan */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      z-index: 50;
+      padding: 16px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-box {
+      background: #ffffff;
+      width: 100%;
+      max-width: 520px;
+      border-radius: 14px;
+      padding: 20px;
+      max-height: 90vh;
+      overflow-y: auto;
+      border-top: 4px solid var(--primary);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      gap: 10px;
+    }
+
+    .btn-close {
+      background: #f1f5f9;
+      border: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .detail-table {
+      width: 100%;
+      font-size: 0.86rem;
+      margin-bottom: 14px;
+    }
+
+    .detail-row {
+      padding: 7px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .detail-row span {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .detail-row strong {
+      color: var(--text);
+      word-break: break-word;
+    }
+
+    .link-btn {
+      display: inline-block;
+      margin-top: 4px;
+      color: var(--primary);
+      font-weight: 700;
+      text-decoration: underline;
+    }
+
+    @media (max-width: 640px) {
+      .form-grid, .filter-bar {
+        grid-template-columns: 1fr;
+      }
+      .hero h1 {
+        font-size: 1.1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header Institusi -->
+    <header class="hero">
+      <div class="hero-top">
+        <div>
+          <span class="hero-badge">LPPM STAI Imam Syafi'i Cianjur</span>
+          <h1>Sistem Pengelolaan Penelitian & PkM</h1>
+          <p>Lembaga Penelitian dan Pengabdian kepada Masyarakat &bull; HKI &amp; PBA</p>
+        </div>
+        <div class="hero-actions">
+          <button type="button" class="btn-ghost" onclick="toggleFlow()">Alur Proses</button>
+          <button type="button" class="btn-ghost" id="btnRefresh" onclick="loadData(true)">Muat Ulang</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Panel Alur Proses LPPM -->
+    <section id="flowPanel" class="flow-panel">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <strong style="color:var(--primary-deep); font-size:0.9rem;">Alur Pengelolaan Penelitian &amp; PkM STAI Imam Syafi'i Cianjur</strong>
+        <button type="button" class="btn-close" onclick="toggleFlow()">&times;</button>
+      </div>
+      <div class="flow-steps">
+        <div class="flow-step"><strong>1. Pengajuan Proposal</strong>Unggah usulan penelitian/PkM</div>
+        <div class="flow-step"><strong>2. Desk Evaluation</strong>Evaluasi administrasi oleh LPPM</div>
+        <div class="flow-step"><strong>3. Review Proposal</strong>Penilaian kelayakan tim reviewer</div>
+        <div class="flow-step"><strong>4. Penetapan Penerimaan</strong>SK &amp; nilai dana disetujui</div>
+        <div class="flow-step"><strong>5. Tanda Tangan Kontrak</strong>Pencairan dana tahap I (70%)</div>
+        <div class="flow-step"><strong>6. Pelaksanaan Kegiatan</strong>Durasi pelaksanaan 3–4 bulan</div>
+        <div class="flow-step"><strong>7. Monev LPPM</strong>Monitoring &amp; tindak lanjut</div>
+        <div class="flow-step"><strong>8. Laporan Akhir</strong>Penyerahan laporan ke LPPM</div>
+        <div class="flow-step"><strong>9. Review Laporan Akhir</strong>Uji kelayakan luaran &amp; laporan</div>
+        <div class="flow-step"><strong>10. Berita Acara Laporan</strong>Pencairan sisa dana (30%)</div>
+      </div>
+    </section>
+
+    <!-- Ringkasan Statistik -->
+    <section class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-num" id="statTotal">0</div>
+        <div class="stat-label">Total Usulan</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" id="statPenelitian">0</div>
+        <div class="stat-label">Penelitian</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" id="statPkm">0</div>
+        <div class="stat-label">Pengabdian (PkM)</div>
+      </div>
+    </section>
+
+    <!-- Form Pengajuan Proposal / Kegiatan -->
+    <section class="card">
+      <div class="card-title">
+        <span>Input Pengajuan Proposal Baru</span>
+        <small id="cacheInfo" style="font-weight:400; color:var(--muted); font-size:0.75rem;"></small>
+      </div>
+      <form id="lppmForm">
+        <div class="form-grid">
+          <div>
+            <label for="jenis">Jenis Kegiatan</label>
+            <select id="jenis" required>
+              <option value="Penelitian">Penelitian</option>
+              <option value="PkM">Pengabdian kepada Masyarakat (PkM)</option>
+            </select>
+          </div>
+          <div>
+            <label for="prodi">Program Studi</label>
+            <select id="prodi" required>
+              <option value="Hukum Keluarga Islam (HKI)">Hukum Keluarga Islam (HKI)</option>
+              <option value="Pendidikan Bahasa Arab (PBA)">Pendidikan Bahasa Arab (PBA)</option>
+              <option value="Lintas Prodi / Institusi">Lintas Prodi / Institusi</option>
+            </select>
+          </div>
+          <div>
+            <label for="ketua">Ketua Peneliti / Pelaksana</label>
+            <input type="text" id="ketua" required placeholder="Nama lengkap & gelar..." />
+          </div>
+          <div>
+            <label for="tahapan">Tahapan Awal</label>
+            <select id="tahapan" required>
+              <option value="Pengajuan Proposal">1. Pengajuan Proposal</option>
+              <option value="Desk Evaluation">2. Desk Evaluation</option>
+              <option value="Review Proposal">3. Review Proposal</option>
+              <option value="Penetapan Penerimaan">4. Penetapan Penerimaan</option>
+              <option value="Tanda Tangan Kontrak (70%)">5. Tanda Tangan Kontrak (70%)</option>
+              <option value="Pelaksanaan Kegiatan">6. Pelaksanaan Kegiatan</option>
+              <option value="Monev LPPM">7. Monev LPPM</option>
+              <option value="Laporan Akhir">8. Laporan Akhir</option>
+              <option value="Review Laporan Akhir">9. Review Laporan Akhir</option>
+              <option value="Berita Acara Laporan (30%)">10. Berita Acara Laporan (30%)</option>
+            </select>
+          </div>
+          <div class="form-full">
+            <label for="judul">Judul Penelitian / Kegiatan PkM</label>
+            <input type="text" id="judul" required placeholder="Tuliskan judul lengkap proposal..." />
+          </div>
+          <div>
+            <label for="dana">Usulan / Nilai Dana (Opsional)</label>
+            <input type="text" id="dana" placeholder="Contoh: Rp 5.000.000" />
+          </div>
+          <div>
+            <label for="tautan">Tautan Berkas Google Drive (Opsional)</label>
+            <input type="url" id="tautan" placeholder="https://drive.google.com/..." />
+          </div>
+          <div class="form-full">
+            <label for="keterangan">Keterangan / Anggota Tim</label>
+            <textarea id="keterangan" rows="2" placeholder="Anggota dosen/mahasiswa atau catatan tambahan..."></textarea>
+          </div>
+          <div class="form-full">
+            <button type="submit" class="btn-primary" id="btnSubmit">Simpan Pengajuan ke Database LPPM</button>
+            <div id="statusMsg" class="status-msg"></div>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <!-- Rekap & Monitoring Data -->
+    <section class="card">
+      <div class="card-title">
+        <span>Daftar Rekap Penelitian &amp; PkM</span>
+        <span style="font-size:0.76rem; font-weight:500; color:var(--muted);">Klik baris untuk detail &amp; ubah tahap</span>
+      </div>
+
+      <div class="filter-bar">
+        <input type="text" id="searchInput" placeholder="Cari judul, ketua, atau ID..." oninput="applyFilter()" />
+        <select id="filterJenis" onchange="applyFilter()">
+          <option value="">Semua Jenis</option>
+          <option value="Penelitian">Penelitian</option>
+          <option value="PkM">PkM</option>
+        </select>
+        <select id="filterTahapan" onchange="applyFilter()">
+          <option value="">Semua Tahapan</option>
+          <option value="Pengajuan Proposal">Pengajuan Proposal</option>
+          <option value="Desk Evaluation">Desk Evaluation</option>
+          <option value="Review Proposal">Review Proposal</option>
+          <option value="Penetapan Penerimaan">Penetapan Penerimaan</option>
+          <option value="Tanda Tangan Kontrak (70%)">Tanda Tangan Kontrak (70%)</option>
+          <option value="Pelaksanaan Kegiatan">Pelaksanaan Kegiatan</option>
+          <option value="Monev LPPM">Monev LPPM</option>
+          <option value="Laporan Akhir">Laporan Akhir</option>
+          <option value="Review Laporan Akhir">Review Laporan Akhir</option>
+          <option value="Berita Acara Laporan (30%)">Berita Acara Laporan (30%)</option>
+          <option value="Proposal Ditolak">Proposal Ditolak</option>
+          <option value="Laporan Akhir Ditolak">Laporan Akhir Ditolak</option>
+        </select>
+      </div>
+
+      <div id="listContainer" class="list-wrapper">
+        <p style="font-size:0.85rem; color:var(--muted);">Memuat data LPPM...</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- Modal Detail & Pembaruan Tahapan -->
+  <div id="detailModal" class="modal-backdrop" onclick="closeModalOnBackdrop(event)">
+    <div class="modal-box">
+      <div class="modal-header">
+        <strong style="color:var(--primary-deep); font-size:1rem;">Detail Usulan LPPM</strong>
+        <button type="button" class="btn-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div id="modalContent" class="detail-table"></div>
+
+      <div style="background:var(--bg); padding:12px; border-radius:10px; border:1px solid var(--border);">
+        <label for="updateTahapanSelect">Perbarui Tahapan Proses LPPM</label>
+        <select id="updateTahapanSelect" style="margin-bottom:10px;">
+          <option value="Pengajuan Proposal">1. Pengajuan Proposal</option>
+          <option value="Desk Evaluation">2. Desk Evaluation</option>
+          <option value="Review Proposal">3. Review Proposal</option>
+          <option value="Penetapan Penerimaan">4. Penetapan Penerimaan</option>
+          <option value="Tanda Tangan Kontrak (70%)">5. Tanda Tangan Kontrak (70%)</option>
+          <option value="Pelaksanaan Kegiatan">6. Pelaksanaan Kegiatan (3–4 Bulan)</option>
+          <option value="Monev LPPM">7. Monev LPPM</option>
+          <option value="Laporan Akhir">8. Laporan Akhir</option>
+          <option value="Review Laporan Akhir">9. Review Laporan Akhir</option>
+          <option value="Berita Acara Laporan (30%)">10. Berita Acara Laporan (30%)</option>
+          <option value="Proposal Ditolak">Proposal Ditolak</option>
+          <option value="Laporan Akhir Ditolak">Laporan Akhir Ditolak</option>
+        </select>
+        <button type="button" class="btn-primary" id="btnUpdateStage" onclick="submitStageUpdate()">Simpan Perubahan Tahapan</button>
+        <div id="modalStatusMsg" class="status-msg"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbz730B9Zc3j1GnPyacj2uYrsbZI4Bjz6vtn3uhDQavSdcgooCk9p8Fq86u_mruoEfct/exec';
+    const CACHE_KEY = 'staiis_lppm_cache_v1';
+    const CACHE_TTL_MS = 365 * 24 * 60 * 60 * 1000; // 1 tahun
+
+    let allRecords = [];
+    let selectedRecordId = null;
+
+    function toggleFlow() {
+      document.getElementById('flowPanel').classList.toggle('active');
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    async function loadData(forceRefresh = false) {
+      const btnRefresh = document.getElementById('btnRefresh');
+      const cacheInfo = document.getElementById('cacheInfo');
+      btnRefresh.textContent = 'Memuat...';
+
+      let cachedObj = null;
+      try {
+        const raw = localStorage.getItem(CACHE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && parsed.savedAt && (Date.now() - parsed.savedAt < CACHE_TTL_MS)) {
+            cachedObj = parsed;
+            allRecords = parsed.data || [];
+            updateStats();
+            applyFilter();
+            cacheInfo.textContent = 'Versi cache: ' + (parsed.version || 'v1');
+          }
+        }
+      } catch (e) {
+        localStorage.removeItem(CACHE_KEY);
+      }
+
+      try {
+        const fetchUrl = forceRefresh ? `${API_URL}?t=${Date.now()}` : API_URL;
+        const res = await fetch(fetchUrl);
+        const json = await res.json();
+
+        if (json.status === 'success') {
+          const serverVersion = json.version || 'v1';
+          const isVersionChanged = !cachedObj || cachedObj.version !== serverVersion;
+
+          if (forceRefresh || isVersionChanged || JSON.stringify(cachedObj.data) !== JSON.stringify(json.data)) {
+            localStorage.setItem(CACHE_KEY, JSON.stringify({
+              version: serverVersion,
+              savedAt: Date.now(),
+              data: json.data || []
+            }));
+            allRecords = json.data || [];
+            updateStats();
+            applyFilter();
+          }
+          cacheInfo.textContent = 'Tersinkron (' + serverVersion + ')';
+        }
+      } catch (err) {
+        if (!cachedObj) {
+          document.getElementById('listContainer').innerHTML =
+            '<p style="color:#b91c1c; font-size:0.85rem;">Gagal terhubung ke server Apps Script. Pastikan deployment Web App aktif.</p>';
+        }
+      } finally {
+        btnRefresh.textContent = 'Muat Ulang';
+      }
+    }
+
+    function updateStats() {
+      const total = allRecords.length;
+      const penelitian = allRecords.filter(r => r.Jenis === 'Penelitian').length;
+      const pkm = allRecords.filter(r => r.Jenis === 'PkM').length;
+
+      document.getElementById('statTotal').textContent = total;
+      document.getElementById('statPenelitian').textContent = penelitian;
+      document.getElementById('statPkm').textContent = pkm;
+    }
+
+    function applyFilter() {
+      const q = document.getElementById('searchInput').value.toLowerCase().trim();
+      const fJenis = document.getElementById('filterJenis').value;
+      const fTahap = document.getElementById('filterTahapan').value;
+
+      const filtered = allRecords.filter(item => {
+        const matchJenis = !fJenis || item.Jenis === fJenis;
+        const matchTahap = !fTahap || item.Tahapan === fTahap;
+        const matchQuery = !q ||
+          (item.Judul || '').toLowerCase().includes(q) ||
+          (item.Ketua || '').toLowerCase().includes(q) ||
+          (item.ID || '').toLowerCase().includes(q) ||
+          (item.Prodi || '').toLowerCase().includes(q);
+        return matchJenis && matchTahap && matchQuery;
+      });
+
+      renderList(filtered);
+    }
+
+    function renderList(items) {
+      const container = document.getElementById('listContainer');
+      if (!items || items.length === 0) {
+        container.innerHTML = '<p style="font-size:0.85rem; color:var(--muted);">Belum ada data sesuai filter.</p>';
+        return;
+      }
+
+      container.innerHTML = items.map(item => {
+        const isDitolak = (item.Tahapan || '').toLowerCase().includes('ditolak');
+        const badgeClass = isDitolak ? 'badge badge-danger' : (item.Jenis === 'PkM' ? 'badge badge-pkm' : 'badge');
+
+        return `
+          <div class="row-item" onclick="openDetail('${escapeHtml(item.ID)}')">
+            <div class="row-line">
+              <div class="row-title">${escapeHtml(item.Judul)}</div>
+              <span class="${badgeClass}">${escapeHtml(item.Tahapan)}</span>
+            </div>
+            <div class="row-sub">
+              <strong>${escapeHtml(item.Jenis)}</strong> &bull; ${escapeHtml(item.Ketua)} (${escapeHtml(item.Prodi)}) &bull; ${escapeHtml(item.Waktu)}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    document.getElementById('lppmForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('btnSubmit');
+      const msg = document.getElementById('statusMsg');
+
+      btn.disabled = true;
+      btn.textContent = 'Menyimpan ke Spreadsheet...';
+      msg.textContent = '';
+
+      const payload = {
+        action: 'create',
+        jenis: document.getElementById('jenis').value,
+        prodi: document.getElementById('prodi').value,
+        ketua: document.getElementById('ketua').value.trim(),
+        tahapan: document.getElementById('tahapan').value,
+        judul: document.getElementById('judul').value.trim(),
+        dana: document.getElementById('dana').value.trim(),
+        tautan: document.getElementById('tautan').value.trim(),
+        keterangan: document.getElementById('keterangan').value.trim()
+      };
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+
+        if (result.status === 'success') {
+          msg.style.color = '#14724e';
+          msg.textContent = 'Berhasil disimpan (' + result.id + ')';
+          document.getElementById('lppmForm').reset();
+          await loadData(true);
+        } else {
+          throw new Error(result.message || 'Terjadi kesalahan');
+        }
+      } catch (err) {
+        msg.style.color = '#b91c1c';
+        msg.textContent = 'Gagal menyimpan: ' + err.message;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Simpan Pengajuan ke Database LPPM';
+      }
+    });
+
+    function openDetail(id) {
+      const item = allRecords.find(r => r.ID === id);
+      if (!item) return;
+
+      selectedRecordId = id;
+      document.getElementById('modalStatusMsg').textContent = '';
+      document.getElementById('updateTahapanSelect').value = item.Tahapan || 'Pengajuan Proposal';
+
+      const linkHtml = item.Tautan
+        ? `<a href="${escapeHtml(item.Tautan)}" target="_blank" rel="noopener" class="link-btn">Buka Berkas Google Drive &rarr;</a>`
+        : '<strong>-</strong>';
+
+      document.getElementById('modalContent').innerHTML = `
+        <div class="detail-row"><span>ID &amp; Waktu Input</span><strong>${escapeHtml(item.ID)} &bull; ${escapeHtml(item.Waktu)}</strong></div>
+        <div class="detail-row"><span>Jenis &amp; Program Studi</span><strong>${escapeHtml(item.Jenis)} &mdash; ${escapeHtml(item.Prodi)}</strong></div>
+        <div class="detail-row"><span>Ketua Pelaksana</span><strong>${escapeHtml(item.Ketua)}</strong></div>
+        <div class="detail-row"><span>Judul Kegiatan</span><strong>${escapeHtml(item.Judul)}</strong></div>
+        <div class="detail-row"><span>Tahapan Saat Ini</span><strong>${escapeHtml(item.Tahapan)}</strong></div>
+        <div class="detail-row"><span>Anggaran / Nilai Dana</span><strong>${escapeHtml(item.Dana || '-')}</strong></div>
+        <div class="detail-row"><span>Tautan Berkas</span>${linkHtml}</div>
+        <div class="detail-row"><span>Keterangan</span><strong>${escapeHtml(item.Keterangan || '-')}</strong></div>
+      `;
+
+      document.getElementById('detailModal').classList.add('open');
+    }
+
+    function closeModal() {
+      document.getElementById('detailModal').classList.remove('open');
+      selectedRecordId = null;
+    }
+
+    function closeModalOnBackdrop(e) {
+      if (e.target.id === 'detailModal') closeModal();
+    }
+
+    async function submitStageUpdate() {
+      if (!selectedRecordId) return;
+      const btn = document.getElementById('btnUpdateStage');
+      const msg = document.getElementById('modalStatusMsg');
+      const tahapanBaru = document.getElementById('updateTahapanSelect').value;
+
+      btn.disabled = true;
+      btn.textContent = 'Memperbarui...';
+      msg.textContent = '';
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({
+            action: 'updateStatus',
+            id: selectedRecordId,
+            tahapan: tahapanBaru
+          })
+        });
+        const result = await res.json();
+
+        if (result.status === 'success') {
+          msg.style.color = '#14724e';
+          msg.textContent = result.message;
+          await loadData(true);
+          setTimeout(() => closeModal(), 700);
+        } else {
+          throw new Error(result.message);
+        }
+      } catch (err) {
+        msg.style.color = '#b91c1c';
+        msg.textContent = 'Gagal memperbarui: ' + err.message;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Simpan Perubahan Tahapan';
+      }
+    }
+
+    loadData();
+  </script>
+</body>
+</html>
