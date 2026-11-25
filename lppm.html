@@ -466,6 +466,14 @@
       padding-top: 0;
     }
 
+    .history-link {
+      display: inline-block;
+      margin-top: 3px;
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: underline;
+    }
+
     .admin-panel {
       background: #f8faf9;
       padding: 14px;
@@ -492,6 +500,13 @@
 
     .field-space {
       margin-bottom: 10px;
+    }
+
+    .field-subhint {
+      display: block;
+      font-size: 0.73rem;
+      color: var(--muted);
+      margin-top: 4px;
     }
 
     @media (max-width: 640px) {
@@ -699,6 +714,12 @@
         </div>
 
         <div class="field-space">
+          <label for="updateTautanInput">Tautan Berkas Google Drive Hasil Revisi / Terbaru (Opsional)</label>
+          <input type="url" id="updateTautanInput" placeholder="https://drive.google.com/..." />
+          <span class="field-subhint">Isi jika ada berkas hasil revisi atau laporan terbaru. Jika dikosongkan, sistem tetap memakai tautan sebelumnya.</span>
+        </div>
+
+        <div class="field-space">
           <label for="lppmPasswordInput">Sandi LPPM (Wajib untuk Menyimpan)</label>
           <input type="password" id="lppmPasswordInput" placeholder="Masukkan sandi LPPM..." autocomplete="off" />
         </div>
@@ -711,7 +732,7 @@
 
   <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbz730B9Zc3j1GnPyacj2uYrsbZI4Bjz6vtn3uhDQavSdcgooCk9p8Fq86u_mruoEfct/exec';
-    const CACHE_KEY = 'staiis_lppm_cache_v2';
+    const CACHE_KEY = 'staiis_lppm_cache_v3';
     const CACHE_TTL_MS = 365 * 24 * 60 * 60 * 1000; // 1 tahun
 
     const STAGE_FLOW = [
@@ -752,7 +773,6 @@
       ].join('||');
     }
 
-    // Mengelompokkan data berdasarkan usulan sehingga hanya tahap terbaru yang tampil di daftar utama
     function processRecords(records) {
       allRecords = records || [];
       latestRecords = [];
@@ -762,7 +782,7 @@
         const key = getProposalKey(item);
         if (!historyByKey[key]) {
           historyByKey[key] = [];
-          latestRecords.push(item); // Baris paling atas adalah tahap terbaru
+          latestRecords.push(item);
         }
         historyByKey[key].push(item);
       });
@@ -783,7 +803,7 @@
             processRecords(parsed.data || []);
             updateStats();
             applyFilter();
-            cacheInfo.textContent = 'Versi cache: ' + (parsed.version || 'v2');
+            cacheInfo.textContent = 'Versi cache: ' + (parsed.version || 'v3');
           }
         }
       } catch (e) {
@@ -796,7 +816,7 @@
         const json = await res.json();
 
         if (json.status === 'success') {
-          const serverVersion = json.version || 'v2';
+          const serverVersion = json.version || 'v3';
           const isVersionChanged = !cachedObj || cachedObj.version !== serverVersion;
 
           if (forceRefresh || isVersionChanged || JSON.stringify(cachedObj.data) !== JSON.stringify(json.data)) {
@@ -952,8 +972,8 @@
       selectedRecordId = item.ID;
       document.getElementById('modalStatusMsg').textContent = '';
       document.getElementById('lppmPasswordInput').value = '';
+      document.getElementById('updateTautanInput').value = '';
 
-      // Otomatis sarankan tahap berikutnya sesuai urutan alur LPPM
       const tahapSelect = document.getElementById('updateTahapanSelect');
       const currentIdx = STAGE_FLOW.indexOf(item.Tahapan);
       if (currentIdx >= 0 && currentIdx < STAGE_FLOW.length - 1) {
@@ -981,11 +1001,10 @@
         <div class="detail-row"><span>Judul Kegiatan</span><strong>${escapeHtml(item.Judul)}</strong></div>
         <div class="detail-row"><span>Tahapan Saat Ini</span><strong>${escapeHtml(item.Tahapan)}</strong></div>
         <div class="detail-row"><span>Anggaran / Nilai Dana</span><strong>${escapeHtml(item.Dana || '-')}</strong></div>
-        <div class="detail-row"><span>Tautan Berkas</span>${linkHtml}</div>
+        <div class="detail-row"><span>Tautan Berkas Saat Ini</span>${linkHtml}</div>
         <div class="detail-row"><span>Keterangan Tahap Ini</span><strong>${escapeHtml(item.Keterangan || '-')}</strong></div>
       `;
 
-      // Tampilkan riwayat tahap sebelumnya jika sudah pernah berpindah tahap
       const key = getProposalKey(item);
       const historyList = (historyByKey[key] || []).filter(h => h.ID !== item.ID);
       const historyContainer = document.getElementById('modalHistoryBox');
@@ -998,6 +1017,7 @@
               <div class="history-item">
                 <strong>${escapeHtml(h.Tahapan)}</strong> (${escapeHtml(h.Waktu)})<br/>
                 ${escapeHtml(h.Keterangan || '-')}
+                ${h.Tautan ? `<br/><a href="${escapeHtml(h.Tautan)}" target="_blank" rel="noopener" class="history-link">Lihat Berkas Tahap Ini &nearr;</a>` : ''}
               </div>
             `).join('')}
           </div>
@@ -1024,11 +1044,19 @@
       const msg = document.getElementById('modalStatusMsg');
       const tahapanBaru = document.getElementById('updateTahapanSelect').value;
       const keteranganBaru = document.getElementById('updateKeteranganInput').value.trim();
+      const tautanBaru = document.getElementById('updateTautanInput').value.trim();
       const sandi = document.getElementById('lppmPasswordInput').value.trim();
 
       if (!keteranganBaru) {
         msg.style.color = '#b91c1c';
         msg.textContent = 'Harap isi keterangan pembaruan / hasil evaluasi LPPM.';
+        return;
+      }
+
+      if (tautanBaru && !/^https?:\/\//i.test(tautanBaru)) {
+        msg.style.color = '#b91c1c';
+        msg.textContent = 'Format tautan Google Drive harus diawali https://';
+        document.getElementById('updateTautanInput').focus();
         return;
       }
 
@@ -1059,6 +1087,7 @@
             sourceId: selectedRecordId,
             tahapan: tahapanBaru,
             keterangan: keteranganBaru,
+            tautan: tautanBaru,
             password: sandi
           })
         });
