@@ -226,6 +226,30 @@
       color: var(--text);
     }
 
+    input[type="file"] {
+      padding: 7px 10px;
+      font-size: 0.84rem;
+      background: #f8faf9;
+      border: 1px dashed #9ec3b2;
+      cursor: pointer;
+    }
+
+    input[type="file"]::file-selector-button {
+      background: var(--primary-light);
+      color: var(--primary-deep);
+      border: 1px solid #b7dac9;
+      padding: 5px 11px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+
+    input[type="file"]::file-selector-button:hover {
+      background: #d7ede3;
+    }
+
     input:focus, select:focus, textarea:focus {
       outline: none;
       border-color: var(--primary);
@@ -612,8 +636,9 @@
             <input type="text" id="dana" placeholder="Contoh: Rp 5.000.000" />
           </div>
           <div>
-            <label for="tautan">Tautan Berkas Google Drive (Opsional)</label>
-            <input type="url" id="tautan" placeholder="https://drive.google.com/..." />
+            <label for="berkasFile">Upload Berkas Proposal (Opsional)</label>
+            <input type="file" id="berkasFile" accept=".pdf,.doc,.docx,.zip,.rar,.jpg,.jpeg,.png" />
+            <span class="field-subhint">PDF / Word / ZIP (maks. 15 MB). Otomatis tersimpan di Drive LPPM.</span>
           </div>
           <div class="form-full">
             <label for="keterangan">Keterangan / Anggota Tim</label>
@@ -714,9 +739,9 @@
         </div>
 
         <div class="field-space">
-          <label for="updateTautanInput">Tautan Berkas Google Drive Hasil Revisi / Terbaru (Opsional)</label>
-          <input type="url" id="updateTautanInput" placeholder="https://drive.google.com/..." />
-          <span class="field-subhint">Isi jika ada berkas hasil revisi atau laporan terbaru. Jika dikosongkan, sistem tetap memakai tautan sebelumnya.</span>
+          <label for="updateBerkasFile">Upload Berkas Hasil Revisi / Terbaru (Opsional)</label>
+          <input type="file" id="updateBerkasFile" accept=".pdf,.doc,.docx,.zip,.rar,.jpg,.jpeg,.png" />
+          <span class="field-subhint">Unggah berkas revisi/laporan terbaru (maks. 15 MB) untuk disimpan ke Drive LPPM. Jika dikosongkan, sistem tetap memakai berkas sebelumnya.</span>
         </div>
 
         <div class="field-space">
@@ -732,8 +757,9 @@
 
   <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbz730B9Zc3j1GnPyacj2uYrsbZI4Bjz6vtn3uhDQavSdcgooCk9p8Fq86u_mruoEfct/exec';
-    const CACHE_KEY = 'staiis_lppm_cache_v3';
+    const CACHE_KEY = 'staiis_lppm_cache_v4';
     const CACHE_TTL_MS = 365 * 24 * 60 * 60 * 1000; // 1 tahun
+    const MAX_FILE_SIZE_BYTES = 15 * 1024 * 1024; // 15 MB
 
     const STAGE_FLOW = [
       'Pengajuan Proposal',
@@ -763,6 +789,31 @@
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;');
+    }
+
+    function readFileAsBase64(file) {
+      return new Promise((resolve, reject) => {
+        if (!file) {
+          resolve(null);
+          return;
+        }
+        if (file.size > MAX_FILE_SIZE_BYTES) {
+          reject(new Error('Ukuran berkas melebihi batas maksimal 15 MB.'));
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = () => {
+          const dataUrl = String(reader.result || '');
+          const base64Part = dataUrl.includes(',') ? dataUrl.split(',')[1] : dataUrl;
+          resolve({
+            fileBase64: base64Part,
+            fileName: file.name,
+            fileMimeType: file.type || 'application/octet-stream'
+          });
+        };
+        reader.onerror = () => reject(new Error('Gagal membaca berkas dari perangkat.'));
+        reader.readAsDataURL(file);
+      });
     }
 
     function getProposalKey(item) {
@@ -803,7 +854,7 @@
             processRecords(parsed.data || []);
             updateStats();
             applyFilter();
-            cacheInfo.textContent = 'Versi cache: ' + (parsed.version || 'v3');
+            cacheInfo.textContent = 'Versi cache: ' + (parsed.version || 'v4');
           }
         }
       } catch (e) {
@@ -816,7 +867,7 @@
         const json = await res.json();
 
         if (json.status === 'success') {
-          const serverVersion = json.version || 'v3';
+          const serverVersion = json.version || 'v4';
           const isVersionChanged = !cachedObj || cachedObj.version !== serverVersion;
 
           if (forceRefresh || isVersionChanged || JSON.stringify(cachedObj.data) !== JSON.stringify(json.data)) {
@@ -908,24 +959,30 @@
       e.preventDefault();
       const btn = document.getElementById('btnSubmit');
       const msg = document.getElementById('statusMsg');
+      const fileInput = document.getElementById('berkasFile');
+      const selectedFile = fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
 
       btn.disabled = true;
-      btn.textContent = 'Menyimpan ke Spreadsheet...';
+      btn.textContent = selectedFile ? 'Mengunggah Berkas ke Drive...' : 'Menyimpan ke Spreadsheet...';
       msg.textContent = '';
 
-      const payload = {
-        action: 'create',
-        jenis: document.getElementById('jenis').value,
-        prodi: document.getElementById('prodi').value,
-        ketua: document.getElementById('ketua').value.trim(),
-        tahapan: 'Pengajuan Proposal',
-        judul: document.getElementById('judul').value.trim(),
-        dana: document.getElementById('dana').value.trim(),
-        tautan: document.getElementById('tautan').value.trim(),
-        keterangan: document.getElementById('keterangan').value.trim()
-      };
-
       try {
+        const fileData = await readFileAsBase64(selectedFile);
+
+        const payload = {
+          action: 'create',
+          jenis: document.getElementById('jenis').value,
+          prodi: document.getElementById('prodi').value,
+          ketua: document.getElementById('ketua').value.trim(),
+          tahapan: 'Pengajuan Proposal',
+          judul: document.getElementById('judul').value.trim(),
+          dana: document.getElementById('dana').value.trim(),
+          keterangan: document.getElementById('keterangan').value.trim(),
+          fileBase64: fileData ? fileData.fileBase64 : '',
+          fileName: fileData ? fileData.fileName : '',
+          fileMimeType: fileData ? fileData.fileMimeType : ''
+        };
+
         const res = await fetch(API_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -935,7 +992,7 @@
 
         if (result.status === 'success') {
           msg.style.color = '#14724e';
-          msg.textContent = 'Pengajuan proposal berhasil disimpan (' + result.id + ')';
+          msg.textContent = result.message + ' (' + result.id + ')';
           document.getElementById('lppmForm').reset();
           document.getElementById('tahapan').value = 'Pengajuan Proposal';
           await loadData(true);
@@ -972,7 +1029,7 @@
       selectedRecordId = item.ID;
       document.getElementById('modalStatusMsg').textContent = '';
       document.getElementById('lppmPasswordInput').value = '';
-      document.getElementById('updateTautanInput').value = '';
+      document.getElementById('updateBerkasFile').value = '';
 
       const tahapSelect = document.getElementById('updateTahapanSelect');
       const currentIdx = STAGE_FLOW.indexOf(item.Tahapan);
@@ -991,7 +1048,7 @@
       document.getElementById('updateKeteranganInput').value = `[Diterima] Hasil ${tahapSelect.value}: `;
 
       const linkHtml = item.Tautan
-        ? `<a href="${escapeHtml(item.Tautan)}" target="_blank" rel="noopener" class="link-btn">Buka Berkas Google Drive &rarr;</a>`
+        ? `<a href="${escapeHtml(item.Tautan)}" target="_blank" rel="noopener" class="link-btn">Buka Berkas di Google Drive &rarr;</a>`
         : '<strong>-</strong>';
 
       document.getElementById('modalContent').innerHTML = `
@@ -1001,7 +1058,7 @@
         <div class="detail-row"><span>Judul Kegiatan</span><strong>${escapeHtml(item.Judul)}</strong></div>
         <div class="detail-row"><span>Tahapan Saat Ini</span><strong>${escapeHtml(item.Tahapan)}</strong></div>
         <div class="detail-row"><span>Anggaran / Nilai Dana</span><strong>${escapeHtml(item.Dana || '-')}</strong></div>
-        <div class="detail-row"><span>Tautan Berkas Saat Ini</span>${linkHtml}</div>
+        <div class="detail-row"><span>Berkas Google Drive Saat Ini</span>${linkHtml}</div>
         <div class="detail-row"><span>Keterangan Tahap Ini</span><strong>${escapeHtml(item.Keterangan || '-')}</strong></div>
       `;
 
@@ -1044,19 +1101,13 @@
       const msg = document.getElementById('modalStatusMsg');
       const tahapanBaru = document.getElementById('updateTahapanSelect').value;
       const keteranganBaru = document.getElementById('updateKeteranganInput').value.trim();
-      const tautanBaru = document.getElementById('updateTautanInput').value.trim();
       const sandi = document.getElementById('lppmPasswordInput').value.trim();
+      const updateFileInput = document.getElementById('updateBerkasFile');
+      const revisionFile = updateFileInput.files && updateFileInput.files[0] ? updateFileInput.files[0] : null;
 
       if (!keteranganBaru) {
         msg.style.color = '#b91c1c';
         msg.textContent = 'Harap isi keterangan pembaruan / hasil evaluasi LPPM.';
-        return;
-      }
-
-      if (tautanBaru && !/^https?:\/\//i.test(tautanBaru)) {
-        msg.style.color = '#b91c1c';
-        msg.textContent = 'Format tautan Google Drive harus diawali https://';
-        document.getElementById('updateTautanInput').focus();
         return;
       }
 
@@ -1075,10 +1126,12 @@
       }
 
       btn.disabled = true;
-      btn.textContent = 'Menyimpan Riwayat Baru...';
+      btn.textContent = revisionFile ? 'Mengunggah Berkas Revisi...' : 'Menyimpan Riwayat Baru...';
       msg.textContent = '';
 
       try {
+        const fileData = await readFileAsBase64(revisionFile);
+
         const res = await fetch(API_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -1087,8 +1140,10 @@
             sourceId: selectedRecordId,
             tahapan: tahapanBaru,
             keterangan: keteranganBaru,
-            tautan: tautanBaru,
-            password: sandi
+            password: sandi,
+            fileBase64: fileData ? fileData.fileBase64 : '',
+            fileName: fileData ? fileData.fileName : '',
+            fileMimeType: fileData ? fileData.fileMimeType : ''
           })
         });
         const result = await res.json();
