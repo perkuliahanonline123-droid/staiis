@@ -285,6 +285,14 @@
       cursor: not-allowed;
     }
 
+    .btn-admin {
+      background: var(--primary-deep);
+    }
+
+    .btn-admin:hover {
+      background: #073322;
+    }
+
     .status-msg {
       margin-top: 10px;
       font-size: 0.85rem;
@@ -388,7 +396,7 @@
       border: 1px solid #fecaca;
     }
 
-    /* Modal Detail & Update Tahapan */
+    /* Modal Detail & Aksi */
     .modal-backdrop {
       display: none;
       position: fixed;
@@ -407,7 +415,7 @@
     .modal-box {
       background: #ffffff;
       width: 100%;
-      max-width: 540px;
+      max-width: 560px;
       border-radius: 14px;
       padding: 20px;
       max-height: 92vh;
@@ -498,6 +506,27 @@
       text-decoration: underline;
     }
 
+    /* Panel Khusus Dosen (Kirim Revisi) */
+    .dosen-panel {
+      background: #f0f8f4;
+      padding: 14px;
+      border-radius: 10px;
+      border: 1px solid #b8dfcc;
+      margin-bottom: 14px;
+    }
+
+    .dosen-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      background: var(--primary);
+      color: #ffffff;
+      padding: 2px 8px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+
+    /* Panel Khusus Admin LPPM */
     .admin-panel {
       background: #f8faf9;
       padding: 14px;
@@ -596,7 +625,7 @@
       </div>
     </section>
 
-    <!-- Form Pengajuan Proposal / Kegiatan -->
+    <!-- Form Pengajuan Proposal Baru -->
     <section class="card">
       <div class="card-title">
         <span>Input Pengajuan Proposal Baru</span>
@@ -656,7 +685,7 @@
     <section class="card">
       <div class="card-title">
         <span>Daftar Rekap Penelitian &amp; PkM</span>
-        <span style="font-size:0.76rem; font-weight:500; color:var(--muted);">Klik baris untuk detail &amp; tindak lanjut LPPM</span>
+        <span style="font-size:0.76rem; font-weight:500; color:var(--muted);">Klik baris untuk kirim revisi &amp; tindak lanjut</span>
       </div>
 
       <div class="filter-bar">
@@ -689,20 +718,49 @@
     </section>
   </div>
 
-  <!-- Modal Detail & Pembaruan Tahapan (Khusus Admin LPPM) -->
+  <!-- Modal Detail & Aksi (Dosen Kirim Revisi & Admin LPPM) -->
   <div id="detailModal" class="modal-backdrop" onclick="closeModalOnBackdrop(event)">
     <div class="modal-box">
       <div class="modal-header">
-        <strong style="color:var(--primary-deep); font-size:1rem;">Detail Usulan &amp; Tindak Lanjut LPPM</strong>
+        <strong style="color:var(--primary-deep); font-size:1rem;">Detail Usulan &amp; Pengiriman Revisi</strong>
         <button type="button" class="btn-close" onclick="closeModal()">&times;</button>
       </div>
       <div id="modalContent" class="detail-table"></div>
       <div id="modalHistoryBox"></div>
 
+      <!-- PANEL 1: KHUSUS DOSEN KIRIM REVISI (TANPA SANDI LPPM) -->
+      <div class="dosen-panel">
+        <span class="dosen-badge">UNTUK DOSEN / KETUA PENELITI</span>
+        <p class="admin-hint">
+          Kirimkan berkas hasil revisi Anda tanpa perlu sandi LPPM. Cukup ketik nama ketua peneliti untuk verifikasi.
+        </p>
+
+        <div class="field-space">
+          <label for="dosenKetuaInput">Verifikasi Nama Ketua Peneliti</label>
+          <input type="text" id="dosenKetuaInput" placeholder="Ketik persis nama ketua peneliti..." autocomplete="off" />
+          <span class="field-subhint">Harus sesuai dengan nama ketua pelaksana pada usulan di atas.</span>
+        </div>
+
+        <div class="field-space">
+          <label for="dosenKeteranganInput">Catatan Perbaikan / Revisi Dosen</label>
+          <input type="text" id="dosenKeteranganInput" placeholder="Contoh: Perbaikan metode penelitian sesuai catatan reviewer..." />
+        </div>
+
+        <div class="field-space">
+          <label for="dosenBerkasFile">Upload Berkas Hasil Revisi (PDF / Word / ZIP)</label>
+          <input type="file" id="dosenBerkasFile" accept=".pdf,.doc,.docx,.zip,.rar,.jpg,.jpeg,.png" />
+          <span class="field-subhint">Maksimal 15 MB. Otomatis tersimpan ke folder Google Drive LPPM.</span>
+        </div>
+
+        <button type="button" class="btn-primary" id="btnSendRevision" onclick="submitDosenRevision()">Kirim Berkas Revisi ke LPPM</button>
+        <div id="dosenStatusMsg" class="status-msg"></div>
+      </div>
+
+      <!-- PANEL 2: KHUSUS ADMIN LPPM (DENGAN SANDI) -->
       <div class="admin-panel">
         <span class="admin-badge">KHUSUS ADMIN LPPM</span>
         <p class="admin-hint">
-          Pembaruan tahapan akan membuat <strong>riwayat data baru</strong> di Spreadsheet tanpa menghapus data awal.
+          Pembaruan tahapan oleh LPPM akan membuat <strong>riwayat data baru</strong> di Spreadsheet tanpa menghapus data awal.
         </p>
 
         <div class="field-space">
@@ -735,21 +793,21 @@
 
         <div class="field-space">
           <label for="updateKeteranganInput">Keterangan Pembaruan / Catatan LPPM</label>
-          <textarea id="updateKeteranganInput" rows="3" required placeholder="Tuliskan hasil evaluasi, catatan revisi, atau keterangan tindak lanjut..."></textarea>
+          <textarea id="updateKeteranganInput" rows="3" placeholder="Tuliskan hasil evaluasi, catatan revisi, atau keterangan tindak lanjut..."></textarea>
         </div>
 
         <div class="field-space">
-          <label for="updateBerkasFile">Upload Berkas Hasil Revisi / Terbaru (Opsional)</label>
+          <label for="updateBerkasFile">Upload Berkas SK / Lampiran LPPM (Opsional)</label>
           <input type="file" id="updateBerkasFile" accept=".pdf,.doc,.docx,.zip,.rar,.jpg,.jpeg,.png" />
-          <span class="field-subhint">Unggah berkas revisi/laporan terbaru (maks. 15 MB) untuk disimpan ke Drive LPPM. Jika dikosongkan, sistem tetap memakai berkas sebelumnya.</span>
+          <span class="field-subhint">Opsional (maks. 15 MB). Jika dikosongkan, sistem tetap mempertahankan berkas terakhir.</span>
         </div>
 
         <div class="field-space">
-          <label for="lppmPasswordInput">Sandi LPPM (Wajib untuk Menyimpan)</label>
+          <label for="lppmPasswordInput">Sandi LPPM (Wajib untuk Admin)</label>
           <input type="password" id="lppmPasswordInput" placeholder="Masukkan sandi LPPM..." autocomplete="off" />
         </div>
 
-        <button type="button" class="btn-primary" id="btnUpdateStage" onclick="submitStageUpdate()">Simpan Data Tahapan Baru</button>
+        <button type="button" class="btn-primary btn-admin" id="btnUpdateStage" onclick="submitAdminStageUpdate()">Simpan Data Tahapan Baru (Admin)</button>
         <div id="modalStatusMsg" class="status-msg"></div>
       </div>
     </div>
@@ -757,7 +815,7 @@
 
   <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbz730B9Zc3j1GnPyacj2uYrsbZI4Bjz6vtn3uhDQavSdcgooCk9p8Fq86u_mruoEfct/exec';
-    const CACHE_KEY = 'staiis_lppm_cache_v4';
+    const CACHE_KEY = 'staiis_lppm_cache_v5';
     const CACHE_TTL_MS = 365 * 24 * 60 * 60 * 1000; // 1 tahun
     const MAX_FILE_SIZE_BYTES = 15 * 1024 * 1024; // 15 MB
 
@@ -854,7 +912,7 @@
             processRecords(parsed.data || []);
             updateStats();
             applyFilter();
-            cacheInfo.textContent = 'Versi cache: ' + (parsed.version || 'v4');
+            cacheInfo.textContent = 'Versi cache: ' + (parsed.version || 'v5');
           }
         }
       } catch (e) {
@@ -867,7 +925,7 @@
         const json = await res.json();
 
         if (json.status === 'success') {
-          const serverVersion = json.version || 'v4';
+          const serverVersion = json.version || 'v5';
           const isVersionChanged = !cachedObj || cachedObj.version !== serverVersion;
 
           if (forceRefresh || isVersionChanged || JSON.stringify(cachedObj.data) !== JSON.stringify(json.data)) {
@@ -955,6 +1013,7 @@
       }).join('');
     }
 
+    // SUBMIT 1: PENGAJUAN PROPOSAL BARU
     document.getElementById('lppmForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('btnSubmit');
@@ -1027,10 +1086,17 @@
       if (!item) return;
 
       selectedRecordId = item.ID;
-      document.getElementById('modalStatusMsg').textContent = '';
-      document.getElementById('lppmPasswordInput').value = '';
-      document.getElementById('updateBerkasFile').value = '';
 
+      // Reset input modal
+      document.getElementById('dosenStatusMsg').textContent = '';
+      document.getElementById('modalStatusMsg').textContent = '';
+      document.getElementById('dosenKetuaInput').value = '';
+      document.getElementById('dosenKeteranganInput').value = '';
+      document.getElementById('dosenBerkasFile').value = '';
+      document.getElementById('updateBerkasFile').value = '';
+      document.getElementById('lppmPasswordInput').value = '';
+
+      // Sarankan tahap berikutnya secara otomatis pada panel admin
       const tahapSelect = document.getElementById('updateTahapanSelect');
       const currentIdx = STAGE_FLOW.indexOf(item.Tahapan);
       if (currentIdx >= 0 && currentIdx < STAGE_FLOW.length - 1) {
@@ -1059,7 +1125,7 @@
         <div class="detail-row"><span>Tahapan Saat Ini</span><strong>${escapeHtml(item.Tahapan)}</strong></div>
         <div class="detail-row"><span>Anggaran / Nilai Dana</span><strong>${escapeHtml(item.Dana || '-')}</strong></div>
         <div class="detail-row"><span>Berkas Google Drive Saat Ini</span>${linkHtml}</div>
-        <div class="detail-row"><span>Keterangan Tahap Ini</span><strong>${escapeHtml(item.Keterangan || '-')}</strong></div>
+        <div class="detail-row"><span>Keterangan / Catatan Terakhir</span><strong>${escapeHtml(item.Keterangan || '-')}</strong></div>
       `;
 
       const key = getProposalKey(item);
@@ -1069,7 +1135,7 @@
       if (historyList.length > 0) {
         historyContainer.innerHTML = `
           <div class="history-box">
-            <div class="history-title">Riwayat Tahapan Sebelumnya (${historyList.length})</div>
+            <div class="history-title">Riwayat Tahap &amp; Revisi Sebelumnya (${historyList.length})</div>
             ${historyList.map(h => `
               <div class="history-item">
                 <strong>${escapeHtml(h.Tahapan)}</strong> (${escapeHtml(h.Waktu)})<br/>
@@ -1095,7 +1161,70 @@
       if (e.target.id === 'detailModal') closeModal();
     }
 
-    async function submitStageUpdate() {
+    // SUBMIT 2: DOSEN KIRIM BERKAS REVISI (TANPA SANDI, VERIFIKASI NAMA KETUA)
+    async function submitDosenRevision() {
+      if (!selectedRecordId) return;
+      const btn = document.getElementById('btnSendRevision');
+      const msg = document.getElementById('dosenStatusMsg');
+      const ketuaInput = document.getElementById('dosenKetuaInput').value.trim();
+      const ketInput = document.getElementById('dosenKeteranganInput').value.trim();
+      const fileInput = document.getElementById('dosenBerkasFile');
+      const file = fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
+
+      if (!ketuaInput) {
+        msg.style.color = '#b91c1c';
+        msg.textContent = 'Masukkan Nama Ketua Peneliti untuk verifikasi.';
+        document.getElementById('dosenKetuaInput').focus();
+        return;
+      }
+
+      if (!file) {
+        msg.style.color = '#b91c1c';
+        msg.textContent = 'Pilih berkas revisi yang ingin diunggah.';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Mengunggah Berkas Revisi...';
+      msg.textContent = '';
+
+      try {
+        const fileData = await readFileAsBase64(file);
+
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({
+            action: 'submitRevision',
+            sourceId: selectedRecordId,
+            ketuaVerifikasi: ketuaInput,
+            keterangan: ketInput,
+            fileBase64: fileData.fileBase64,
+            fileName: fileData.fileName,
+            fileMimeType: fileData.fileMimeType
+          })
+        });
+        const result = await res.json();
+
+        if (result.status === 'success') {
+          msg.style.color = '#14724e';
+          msg.textContent = result.message;
+          await loadData(true);
+          setTimeout(() => closeModal(), 900);
+        } else {
+          throw new Error(result.message);
+        }
+      } catch (err) {
+        msg.style.color = '#b91c1c';
+        msg.textContent = err.message;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Kirim Berkas Revisi ke LPPM';
+      }
+    }
+
+    // SUBMIT 3: ADMIN LPPM PERBARUI TAHAPAN (DENGAN SANDI)
+    async function submitAdminStageUpdate() {
       if (!selectedRecordId) return;
       const btn = document.getElementById('btnUpdateStage');
       const msg = document.getElementById('modalStatusMsg');
@@ -1103,7 +1232,7 @@
       const keteranganBaru = document.getElementById('updateKeteranganInput').value.trim();
       const sandi = document.getElementById('lppmPasswordInput').value.trim();
       const updateFileInput = document.getElementById('updateBerkasFile');
-      const revisionFile = updateFileInput.files && updateFileInput.files[0] ? updateFileInput.files[0] : null;
+      const adminFile = updateFileInput.files && updateFileInput.files[0] ? updateFileInput.files[0] : null;
 
       if (!keteranganBaru) {
         msg.style.color = '#b91c1c';
@@ -1113,24 +1242,24 @@
 
       if (!sandi) {
         msg.style.color = '#b91c1c';
-        msg.textContent = 'Masukkan sandi LPPM terlebih dahulu untuk menyimpan perubahan.';
+        msg.textContent = 'Masukkan sandi LPPM terlebih dahulu.';
         document.getElementById('lppmPasswordInput').focus();
         return;
       }
 
       if (sandi !== 'lppm26') {
         msg.style.color = '#b91c1c';
-        msg.textContent = 'Sandi LPPM salah! Hanya LPPM yang dapat memperbarui data.';
+        msg.textContent = 'Sandi LPPM salah! Hanya admin LPPM yang dapat mengubah tahapan.';
         document.getElementById('lppmPasswordInput').focus();
         return;
       }
 
       btn.disabled = true;
-      btn.textContent = revisionFile ? 'Mengunggah Berkas Revisi...' : 'Menyimpan Riwayat Baru...';
+      btn.textContent = adminFile ? 'Mengunggah Berkas & Menyimpan...' : 'Menyimpan Riwayat Baru...';
       msg.textContent = '';
 
       try {
-        const fileData = await readFileAsBase64(revisionFile);
+        const fileData = await readFileAsBase64(adminFile);
 
         const res = await fetch(API_URL, {
           method: 'POST',
@@ -1161,7 +1290,7 @@
         msg.textContent = err.message;
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Simpan Data Tahapan Baru';
+        btn.textContent = 'Simpan Data Tahapan Baru (Admin)';
       }
     }
 
